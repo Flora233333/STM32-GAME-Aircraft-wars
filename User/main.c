@@ -9,7 +9,7 @@
 /* 开发板硬件bsp头文件 */
 #include "bsp_ili9341_lcd.h"
 #include "bsp_usart.h"
-
+#include "object.h"
 /**************************** 任务句柄 ********************************/
 /* 
  * 任务句柄是一个指针，用于指向一个任务，当任务创建好之后，它就具有了一个任务句柄
@@ -68,8 +68,7 @@ int main(void)
   
   /* 开发板硬件初始化 */
   BSP_Init();
-  
-  
+    
    /* 创建AppTaskCreate任务 */
   xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* 任务入口函数 */
                         (const char*    )"AppTaskCreate",/* 任务名字 */

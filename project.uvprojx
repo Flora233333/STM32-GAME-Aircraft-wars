@@ -591,6 +591,16 @@
               <FilePath>.\User\main.c</FilePath>
             </File>
             <File>
+              <FileName>object.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\object.c</FilePath>
+            </File>
+            <File>
+              <FileName>object.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User\object.h</FilePath>
+            </File>
+            <File>
               <FileName>FreeRTOSConfig.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\User\FreeRTOSConfig.h</FilePath>
