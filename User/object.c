@@ -2,8 +2,11 @@
 
 OBJ_HERO Hero;
 OBJ_ENEMY_LIST *EnemyList;
+IMAGE IMAGE_LIB;
 
 int8_t Obj_Init(void) {
+    IMAGE_LIB.Background.pointer = background;
+
     EnemyList = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
 
     if(EnemyList == NULL)

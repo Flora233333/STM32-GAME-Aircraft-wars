@@ -5,6 +5,7 @@
 #include "stm32f10x.h"
 #include "fonts.h"
 #include "bsp_usart.h"
+#include "object.h"
 
 /***************************************************************************************
 2^26 =0X0400 0000 = 64MB,ц©╦Ж BANK сп4*64MB = 256MB
@@ -205,8 +206,8 @@ void 					 LCD_SetTextColor				 (uint16_t Color)	;
 void 					 LCD_SetColors					 (uint16_t TextColor, uint16_t BackColor);
 void 					 LCD_GetColors					 (uint16_t *TextColor, uint16_t *BackColor);
 
-void                     LCD_Picure                      (uint8_t x, uint8_t y);
-void                     Draw_BMP                        (uint16_t usX, uint16_t usY, uint16_t Width, uint16_t Height);
+void                     LCD_DrawPicure                  (uint8_t x, uint8_t y, OBJ_IMAGE *image);
+//void                     Draw_BMP                        (uint16_t usX, uint16_t usY, uint16_t Width, uint16_t Height);
 
 #endif /* __BSP_ILI9341_ILI9341_H */
 

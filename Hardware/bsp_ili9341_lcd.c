@@ -1359,15 +1359,13 @@ void LCD_ClearLine(uint16_t Line)
 这种16位真彩图相当于2个字节表达一个像素
 */
 
-extern const unsigned char gImage_image[153608]; //多个8是因为存了图片信息
-
-void LCD_Picure(uint8_t x, uint8_t y)//const char *image) 
+void LCD_DrawPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image) 
 {
     uint32_t i = 0, len = 0, temp = 0;
     
     /*imageLcd软件勾选图片信息就前[0]到[7]位存储了此图片信息, 所以下面代码是算图片有多少个长宽，虽然可以不要这么麻烦, 直接传入标注大小*/
-    uint16_t Width = ( ( (uint16_t)(gImage_image[2]) << 8) | (uint16_t)(gImage_image[3]) );
-    uint16_t Height = ( ( (uint16_t)(gImage_image[4]) << 8) | (uint16_t)(gImage_image[5]) );
+    uint16_t Width = image->width;
+    uint16_t Height = image->height;
     
     ILI9341_OpenWindow(x, y, Width, Height);//必须精确确认图片像素的宽和高
     
@@ -1381,37 +1379,37 @@ void LCD_Picure(uint8_t x, uint8_t y)//const char *image)
     i = 8; // 因为要跳过前七位
     
     while(i < (len + 8)) { 
-        temp = (uint16_t)(gImage_image[i] << 8) | (uint16_t)(gImage_image[i + 1]);//一个像素点两位字节一起写进去
+        temp = (uint16_t)(image->pointer[i] << 8) | (uint16_t)(image->pointer[i + 1]);//一个像素点两位字节一起写进去
         ILI9341_Write_Data(temp);
         i = i + 2;
     }
 
 }
 
-extern const unsigned char image[5400]; //5400 = 216 * 200 / 8 这种单色图相当于ibit表达一个像素
+//extern const unsigned char image[5400]; //5400 = 216 * 200 / 8 这种单色图相当于ibit表达一个像素
 
-void Draw_BMP(uint16_t usX, uint16_t usY, uint16_t Width, uint16_t Height)//, const char *picture)
-{	
-    uint16_t bitCount = 0;
-    uint16_t byteCount = 0;
-    uint16_t byte_num = Width * Height / 8;
-    
-	ILI9341_OpenWindow (usX, usY, Width, Height);//必须精确确认图片像素的宽和高
-	
-	ILI9341_Write_Cmd ( CMD_SetPixel );			
+//void Draw_BMP(uint16_t usX, uint16_t usY, uint16_t Width, uint16_t Height)//, const char *picture)
+//{	
+//    uint16_t bitCount = 0;
+//    uint16_t byteCount = 0;
+//    uint16_t byte_num = Width * Height / 8;
+//    
+//	ILI9341_OpenWindow (usX, usY, Width, Height);//必须精确确认图片像素的宽和高
+//	
+//	ILI9341_Write_Cmd ( CMD_SetPixel );			
 
-	for ( byteCount = 0; byteCount < byte_num; byteCount++ )
-	{
-			//一位一位处理要显示的颜色
-			for ( bitCount = 0; bitCount < 8; bitCount++ )
-			{
-					if ( image[byteCount] & (0x80>>bitCount) )
-						ILI9341_Write_Data ( CurrentTextColor );			
-					else
-						ILI9341_Write_Data ( CurrentBackColor );
-			}	
-	}	
-}
+//	for ( byteCount = 0; byteCount < byte_num; byteCount++ )
+//	{
+//			//一位一位处理要显示的颜色
+//			for ( bitCount = 0; bitCount < 8; bitCount++ )
+//			{
+//					if ( image[byteCount] & (0x80>>bitCount) )
+//						ILI9341_Write_Data ( CurrentTextColor );			
+//					else
+//						ILI9341_Write_Data ( CurrentBackColor );
+//			}	
+//	}	
+//}
 
 /*********************end of file*************************/
 

@@ -153,7 +153,7 @@ static void Print_Image(void *parm) {
 
   while(1) {
       
-    LCD_Picure(0, 0);
+    LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
       
   }
 }
@@ -165,7 +165,7 @@ static void Uart_Send(void *parm) {
 
   while(1) {
       
-    //LCD_Picure(0, 0);
+    
       
   }
 }
@@ -177,7 +177,7 @@ static void Create_EnemyFlight(void *parm) {
 
   while(1) {
       
-    //LCD_Picure(0, 0);
+    
       
   }
 }
@@ -189,7 +189,7 @@ static void Updata_location(void *parm) {
 
   while(1) {
       
-    //LCD_Picure(0, 0);
+   
       
   }
 }

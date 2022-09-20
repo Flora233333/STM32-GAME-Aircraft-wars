@@ -4,12 +4,22 @@
 #include "stm32f10x.h"
 #include "bsp_usart.h"
 #include "stdlib.h"
+#include "fonts.h"
 
 typedef struct OBJ_IMAGE {
-    uint8_t	*pointer;
+    const uint8_t *pointer;
     uint16_t width;
     uint16_t height;
 } OBJ_IMAGE;
+
+typedef struct IMAGE {
+    OBJ_IMAGE Background;
+    OBJ_IMAGE Hero;
+    OBJ_IMAGE Enemy;
+    OBJ_IMAGE BOOM1;
+    OBJ_IMAGE BOOM2;
+    OBJ_IMAGE Destroy;
+} IMAGE;
 
 typedef struct OBJ_Bullet {
     uint16_t loc_x;
@@ -50,6 +60,7 @@ typedef enum {
 
 extern OBJ_HERO Hero;
 extern OBJ_ENEMY_LIST *EnemyList;
+extern IMAGE IMAGE_LIB;
 
 int8_t Obj_Init(void);
 int8_t Create_Hero(void);
