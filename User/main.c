@@ -17,7 +17,10 @@
  * 这个句柄可以为NULL。
  */
 static TaskHandle_t AppTaskCreate_Handle = NULL;/* 创建任务句柄 */
-static TaskHandle_t Print_BackwardImage = NULL;
+static TaskHandle_t Print_Handle = NULL;
+static TaskHandle_t Uart_Handle = NULL;
+static TaskHandle_t Create_Handle = NULL;
+static TaskHandle_t Updata_Handle = NULL;
 //static TaskHandle_t Print_TaskHandle = NULL;
 
 //static TaskHandle_t Test_Task_Handle = NULL;/* LED任务句柄 */
@@ -50,7 +53,10 @@ static TaskHandle_t Print_BackwardImage = NULL;
 *************************************************************************
 */
 static void AppTaskCreate(void);/* 用于创建任务 */
-static void Print_BackImage(void *parm);
+static void Print_Image(void *parm);
+static void Uart_Send(void *parm);
+static void Create_EnemyFlight(void *parm);
+static void Updata_location(void *parm);
 
 static void BSP_Init(void);/* 用于初始化板载相关资源 */
 
@@ -96,26 +102,51 @@ int main(void)
   **********************************************************************/
 static void AppTaskCreate(void)
 {
-  BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
+    BaseType_t xReturn1 = pdPASS; /* 定义一个创建信息返回值，默认为pdPASS */
+    BaseType_t xReturn2 = pdPASS;
+    BaseType_t xReturn3 = pdPASS;
+    BaseType_t xReturn4 = pdPASS;
   
-  taskENTER_CRITICAL();           //进入临界区
+    taskENTER_CRITICAL();           //进入临界区
 
-  xReturn = xTaskCreate((TaskFunction_t )Print_BackImage,  
-                        (const char*    )"GetData_Task",
-                        (uint16_t       )128,  
+    xReturn1 = xTaskCreate((TaskFunction_t )Print_Image,  
+                        (const char*    )"Print_Image",
+                        (uint16_t       )512,  
                         (void*          )NULL,
-                        (UBaseType_t    )3, 
-                        (TaskHandle_t*  )&Print_BackwardImage);
+                        (UBaseType_t    )2, 
+                        (TaskHandle_t*  )&Print_Handle);
+
+    xReturn2 = xTaskCreate((TaskFunction_t )Uart_Send,  
+                        (const char*    )"Uart_Send",
+                        (uint16_t       )512,  
+                        (void*          )NULL,
+                        (UBaseType_t    )2, 
+                        (TaskHandle_t*  )&Uart_Handle);
+
+    xReturn3 = xTaskCreate((TaskFunction_t )Create_EnemyFlight,  
+                        (const char*    )"Create_EnemyFlight",
+                        (uint16_t       )512,  
+                        (void*          )NULL,
+                        (UBaseType_t    )2, 
+                        (TaskHandle_t*  )&Create_Handle);
+
+    xReturn4 = xTaskCreate((TaskFunction_t )Updata_location,  
+                        (const char*    )"Updata_location",
+                        (uint16_t       )512,  
+                        (void*          )NULL,
+                        (UBaseType_t    )2, 
+                        (TaskHandle_t*  )&Updata_Handle);
                         
-  if(pdPASS == xReturn)
-    printf("创建任务成功!\r\n");
+    if(xReturn1 == pdPASS && xReturn2 == pdPASS &&
+        xReturn3 == pdPASS && xReturn4 == pdPASS)
+        printf("创建任务成功!\r\n");
+   
+    vTaskDelete(AppTaskCreate_Handle); //删除AppTaskCreate任务
   
-  vTaskDelete(AppTaskCreate_Handle); //删除AppTaskCreate任务
-  
-  taskEXIT_CRITICAL();            //退出临界区
+    taskEXIT_CRITICAL();            //退出临界区
 }
 
-static void Print_BackImage(void *parm) {
+static void Print_Image(void *parm) {
 
   //uint8_t status = 0;
   //uint8_t flag = 0;
@@ -126,6 +157,43 @@ static void Print_BackImage(void *parm) {
       
   }
 }
+
+static void Uart_Send(void *parm) {
+
+  //uint8_t status = 0;
+  //uint8_t flag = 0;
+
+  while(1) {
+      
+    //LCD_Picure(0, 0);
+      
+  }
+}
+
+static void Create_EnemyFlight(void *parm) {
+
+  //uint8_t status = 0;
+  //uint8_t flag = 0;
+
+  while(1) {
+      
+    //LCD_Picure(0, 0);
+      
+  }
+}
+
+static void Updata_location(void *parm) {
+
+  //uint8_t status = 0;
+  //uint8_t flag = 0;
+
+  while(1) {
+      
+    //LCD_Picure(0, 0);
+      
+  }
+}
+
 
 
 /***********************************************************************
