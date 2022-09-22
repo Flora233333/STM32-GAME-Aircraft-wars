@@ -10,6 +10,7 @@
 #include "bsp_ili9341_lcd.h"
 #include "bsp_usart.h"
 #include "object.h"
+#include "Key.h"
 /**************************** 任务句柄 ********************************/
 /* 
  * 任务句柄是一个指针，用于指向一个任务，当任务创建好之后，它就具有了一个任务句柄
@@ -72,27 +73,27 @@ static void BSP_Init(void);/* 用于初始化板载相关资源 */
   ****************************************************************/
 int main(void)
 {	
-  BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
-  
-  /* 开发板硬件初始化 */
-  BSP_Init();
+    BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
     
-   /* 创建AppTaskCreate任务 */
-  xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* 任务入口函数 */
-                        (const char*    )"AppTaskCreate",/* 任务名字 */
-                        (uint16_t       )512,  /* 任务栈大小 */
-                        (void*          )NULL,/* 任务入口函数参数 */
-                        (UBaseType_t    )1, /* 任务的优先级 */
-                        (TaskHandle_t*  )&AppTaskCreate_Handle);/* 任务控制块指针 */ 
-						
-						
-  /* 启动任务调度 */  
-  if(xReturn == pdPASS)						
-    vTaskStartScheduler();   /* 启动任务，开启调度 */
-  else
-    return -1;  
-  
-  while(1);   /* 正常不会执行到这里 */    
+    /* 开发板硬件初始化 */
+    BSP_Init();
+        
+    /* 创建AppTaskCreate任务 */
+    xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* 任务入口函数 */
+                            (const char*    )"AppTaskCreate",/* 任务名字 */
+                            (uint16_t       )512,  /* 任务栈大小 */
+                            (void*          )NULL,/* 任务入口函数参数 */
+                            (UBaseType_t    )1, /* 任务的优先级 */
+                            (TaskHandle_t*  )&AppTaskCreate_Handle);/* 任务控制块指针 */ 
+                            
+                            
+    /* 启动任务调度 */  
+    if(xReturn == pdPASS)						
+        vTaskStartScheduler();   /* 启动任务，开启调度 */
+    else
+        return -1;  
+    
+    while(1);   /* 正常不会执行到这里 */    
 }
 
 
@@ -161,61 +162,64 @@ static void Print_Image(void *parm) {
   //uint8_t status = 0;
   //uint8_t flag = 0;
 
-  while(1) {
+    while(1) {
         taskENTER_CRITICAL();  
        
         LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
 
         taskEXIT_CRITICAL();  
-  }
+    }
 }
 
 static void Uart_Send(void *parm) {
 
-  //uint8_t status = 0;
-  //uint8_t flag = 0;
+    //uint8_t status = 0;
+    //uint8_t flag = 0;
 
-  while(1) {
+    while(1) {
       
     
       
-  }
+    }
 }
 
 static void Create_EnemyFlight(void *parm) {
 
-  //uint8_t status = 0;
-  //uint8_t flag = 0;
+    //uint8_t status = 0;
+    //uint8_t flag = 0;
 
-  while(1) {
+    while(1) {
       
     
       
-  }
+    }
 }
 
 static void Updata_location(void *parm) {
 
-  //uint8_t status = 0;
-  //uint8_t flag = 0;
+    //uint8_t status = 0;
+    //uint8_t flag = 0;
 
-  while(1) {
+    while(1) {
       
    
       
-  }
+    }
 }
 
 static void Press_Key(void *parm) {
 
-  //uint8_t status = 0;
-  //uint8_t flag = 0;
+    //uint8_t status = 0;
+    uint8_t flag = 0;
 
-  while(1) {
-      
-   
-      
-  }
+    while(1) {
+        vTaskSuspendAll();
+
+        flag = Read_Key();
+        Hero.dir = flag;
+
+        xTaskResumeAll();
+    }
 }
 
 
@@ -238,9 +242,10 @@ static void BSP_Init(void)
     ILI9341_Init();
 	/* 串口初始化	*/
 	USART_Config();
-    Obj_Init();
-    ILI9341_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);
     
+    Obj_Init();
+    
+    ILI9341_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);
     LCD_SetColors(BLACK, WHITE);
 }
 

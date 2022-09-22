@@ -8,6 +8,10 @@ int8_t Obj_Init(void) {
     IMAGE_LIB.Background.pointer = background;
     IMAGE_LIB.Background.width = 240;
     IMAGE_LIB.Background.height = 320;
+
+    IMAGE_LIB.Hero.pointer = flight;
+    IMAGE_LIB.Hero.width = 40;
+    IMAGE_LIB.Hero.height = 50;
     
     EnemyList = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
 

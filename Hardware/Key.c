@@ -22,16 +22,12 @@ uint8_t Read_Key(void) {
 	
 	if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == 1) {
 		
-		while(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == 1);
-		
-		
+		flag = 1;
 	}
     
     if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == 1) {
 		
-		while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == 1);
-		
-		
+		flag = 2;
 	}
     
 	return flag;
