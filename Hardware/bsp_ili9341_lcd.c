@@ -1083,9 +1083,9 @@ void ILI9341_DrawCircle ( uint16_t usX_Center, uint16_t usY_Center, uint16_t usR
 				ILI9341_SetPointPixel ( usX_Center - sCountY,   usY_Center + sCurrentX );           //3
 				ILI9341_SetPointPixel ( usX_Center - sCountY,   usY_Center - sCurrentX );           //4
 				ILI9341_SetPointPixel ( usX_Center - sCurrentX, usY_Center - sCountY );           //5    
-        ILI9341_SetPointPixel ( usX_Center + sCurrentX, usY_Center - sCountY );           //6
+                ILI9341_SetPointPixel ( usX_Center + sCurrentX, usY_Center - sCountY );           //6
 				ILI9341_SetPointPixel ( usX_Center + sCountY,   usY_Center - sCurrentX );           //7 	
-        ILI9341_SetPointPixel ( usX_Center + sCountY,   usY_Center + sCurrentX );           //0				
+                ILI9341_SetPointPixel ( usX_Center + sCountY,   usY_Center + sCurrentX );           //0				
 			}
 		
 		else
@@ -1381,7 +1381,39 @@ void LCD_DrawPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image)
     while(i < (len + 8)) { 
         temp = (uint16_t)(image->pointer[i] << 8) | (uint16_t)(image->pointer[i + 1]);//一个像素点两位字节一起写进去
         ILI9341_Write_Data(temp);
-        i = i + 2;
+        i += 2;
+    }
+
+}
+
+void LCD_MixPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background) 
+{
+    uint32_t i = 0, len = 0, temp = 0;
+    
+    /*imageLcd软件勾选图片信息就前[0]到[7]位存储了此图片信息, 所以下面代码是算图片有多少个长宽，虽然可以不要这么麻烦, 直接传入标注大小*/
+    uint16_t Width = image->width;
+    uint16_t Height = image->height;
+
+    uint16_t num = (x + (y - 1) * ILI9341_LESS_PIXEL) * 2;
+    
+    ILI9341_OpenWindow(x, y, Width, Height);//必须精确确认图片像素的宽和高
+    
+    ILI9341_Write_Cmd(CMD_SetPixel);
+
+    /*len是字节数量, 所以下面代码是算图片有多少个字节, 乘2是因为16位真彩色*/
+    len = 2 * Width * Height;
+    
+    printf("len = %d  ", len);
+    
+    i = 8; // 因为要跳过前七位
+    
+    while(i < (len + 8)) { 
+        temp = (uint16_t)(image->pointer[i] << 8) | (uint16_t)(image->pointer[i + 1]);//一个像素点两位字节一起写进去
+        if(temp == 0x0000)
+            temp = (uint16_t)(background->pointer[num] << 8) | (uint16_t)(background->pointer[num + 1]);
+        ILI9341_Write_Data(temp);
+        i += 2;
+        num += 2;
     }
 
 }

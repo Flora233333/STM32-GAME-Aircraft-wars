@@ -139,7 +139,7 @@ RAM基地址 = 0X60020000 = 0X60000000+2^16*2 = 0X60000000 + 0X20000 = 0X60020000
 #define      ILI9341_DispWindow_Y_Star		    0     //起始点的Y坐标
 
 #define 			ILI9341_LESS_PIXEL	  							240			//液晶屏较短方向的像素宽度
-#define 			ILI9341_MORE_PIXEL	 								320			//液晶屏较长方向的像素宽度
+#define 			ILI9341_MORE_PIXEL	 							320			//液晶屏较长方向的像素宽度
 
 //根据液晶扫描方向而变化的XY像素宽度
 //调用ILI9341_GramScan函数设置方向时会自动更改
@@ -208,7 +208,7 @@ void 					 LCD_GetColors					 (uint16_t *TextColor, uint16_t *BackColor);
 
 void                     LCD_DrawPicure                  (uint8_t x, uint8_t y, OBJ_IMAGE *image);
 //void                     Draw_BMP                        (uint16_t usX, uint16_t usY, uint16_t Width, uint16_t Height);
-
+void                     LCD_MixPicure                   (uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background);
 #endif /* __BSP_ILI9341_ILI9341_H */
 
 

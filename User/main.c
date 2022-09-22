@@ -166,7 +166,9 @@ static void Print_Image(void *parm) {
         taskENTER_CRITICAL();  
        
         LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
-
+        //LCD_DrawPicure(100, 100, &IMAGE_LIB.Hero);
+        LCD_MixPicure(100, 100, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
+        vTaskDelay(100);
         taskEXIT_CRITICAL();  
     }
 }
@@ -245,8 +247,8 @@ static void BSP_Init(void)
     
     Obj_Init();
     
+    LCD_SetColors(BLACK, BLACK);
     ILI9341_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);
-    LCD_SetColors(BLACK, WHITE);
 }
 
 /********************************END OF FILE****************************/
