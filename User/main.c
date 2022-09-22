@@ -21,6 +21,7 @@ static TaskHandle_t Print_Handle = NULL;
 static TaskHandle_t Uart_Handle = NULL;
 static TaskHandle_t Create_Handle = NULL;
 static TaskHandle_t Updata_Handle = NULL;
+static TaskHandle_t Key_Handle = NULL;
 //static TaskHandle_t Print_TaskHandle = NULL;
 
 //static TaskHandle_t Test_Task_Handle = NULL;/* LED任务句柄 */
@@ -57,6 +58,7 @@ static void Print_Image(void *parm);
 static void Uart_Send(void *parm);
 static void Create_EnemyFlight(void *parm);
 static void Updata_location(void *parm);
+static void Press_Key(void *parm);
 
 static void BSP_Init(void);/* 用于初始化板载相关资源 */
 
@@ -106,6 +108,7 @@ static void AppTaskCreate(void)
     BaseType_t xReturn2 = pdPASS;
     BaseType_t xReturn3 = pdPASS;
     BaseType_t xReturn4 = pdPASS;
+    BaseType_t xReturn5 = pdPASS;
   
     taskENTER_CRITICAL();           //进入临界区
 
@@ -136,9 +139,16 @@ static void AppTaskCreate(void)
                         (void*          )NULL,
                         (UBaseType_t    )2, 
                         (TaskHandle_t*  )&Updata_Handle);
+
+    xReturn5 = xTaskCreate((TaskFunction_t )Press_Key,  
+                        (const char*    )"Press_Key",
+                        (uint16_t       )128,  
+                        (void*          )NULL,
+                        (UBaseType_t    )2, 
+                        (TaskHandle_t*  )&Key_Handle);
                         
     if(xReturn1 == pdPASS && xReturn2 == pdPASS &&
-        xReturn3 == pdPASS && xReturn4 == pdPASS)
+        xReturn3 == pdPASS && xReturn4 == pdPASS && xReturn5 == pdPASS)
         printf("创建任务成功!\r\n");
    
     vTaskDelete(AppTaskCreate_Handle); //删除AppTaskCreate任务
@@ -152,9 +162,11 @@ static void Print_Image(void *parm) {
   //uint8_t flag = 0;
 
   while(1) {
-      
-    LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
-      
+        taskENTER_CRITICAL();  
+       
+        LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
+
+        taskEXIT_CRITICAL();  
   }
 }
 
@@ -194,6 +206,18 @@ static void Updata_location(void *parm) {
   }
 }
 
+static void Press_Key(void *parm) {
+
+  //uint8_t status = 0;
+  //uint8_t flag = 0;
+
+  while(1) {
+      
+   
+      
+  }
+}
+
 
 
 /***********************************************************************
@@ -214,10 +238,10 @@ static void BSP_Init(void)
     ILI9341_Init();
 	/* 串口初始化	*/
 	USART_Config();
-
+    Obj_Init();
     ILI9341_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);
     
-    LCD_SetColors(RED, BLACK);
+    LCD_SetColors(BLACK, WHITE);
 }
 
 /********************************END OF FILE****************************/

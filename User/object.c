@@ -6,7 +6,9 @@ IMAGE IMAGE_LIB;
 
 int8_t Obj_Init(void) {
     IMAGE_LIB.Background.pointer = background;
-
+    IMAGE_LIB.Background.width = 240;
+    IMAGE_LIB.Background.height = 320;
+    
     EnemyList = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
 
     if(EnemyList == NULL)
@@ -24,6 +26,7 @@ int8_t Create_Hero(void) {
     Hero.speed = 5;
     Hero.status = Alive;
     Hero.life = 3;
+    Hero.dir = 0;
     return 0;
 }
 
