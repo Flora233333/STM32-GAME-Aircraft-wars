@@ -8,9 +8,9 @@
 #include "task.h"
 /* 开发板硬件bsp头文件 */
 #include "bsp_ili9341_lcd.h"
+#include "bsp_xpt2046_lcd.h"
 #include "bsp_usart.h"
 #include "object.h"
-#include "Key.h"
 /**************************** 任务句柄 ********************************/
 /* 
  * 任务句柄是一个指针，用于指向一个任务，当任务创建好之后，它就具有了一个任务句柄
@@ -161,14 +161,17 @@ static void Print_Image(void *parm) {
 
   //uint8_t status = 0;
   //uint8_t flag = 0;
-
+    
     while(1) {
         taskENTER_CRITICAL();  
        
         LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
         //LCD_DrawPicure(100, 100, &IMAGE_LIB.Hero);
-        LCD_MixPicure(100, 100, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
-        vTaskDelay(100);
+        LCD_MixPicure(Hero.loc_x, Hero.loc_y, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
+
+        LCD_MixPicure(150, 100, &IMAGE_LIB.Enemy, &IMAGE_LIB.Background);
+        
+        vTaskDelay(10);
         taskEXIT_CRITICAL();  
     }
 }
@@ -203,8 +206,7 @@ static void Updata_location(void *parm) {
     //uint8_t flag = 0;
 
     while(1) {
-      
-   
+
       
     }
 }
@@ -212,13 +214,12 @@ static void Updata_location(void *parm) {
 static void Press_Key(void *parm) {
 
     //uint8_t status = 0;
-    uint8_t flag = 0;
+    //uint8_t flag = 0;
 
     while(1) {
         vTaskSuspendAll();
 
-        flag = Read_Key();
-        Hero.dir = flag;
+        XPT2046_TouchEvenHandler();
 
         xTaskResumeAll();
     }
@@ -242,8 +243,14 @@ static void BSP_Init(void)
 	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
 	
     ILI9341_Init();
+    
+    XPT2046_Init();
+    Calibrate_or_Get_TouchParaWithFlash(6,0);
+    
 	/* 串口初始化	*/
 	USART_Config();
+    
+    ILI9341_GramScan(6); //LCD模式六
     
     Obj_Init();
     

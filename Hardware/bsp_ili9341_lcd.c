@@ -1374,8 +1374,6 @@ void LCD_DrawPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image)
     /*len是字节数量, 所以下面代码是算图片有多少个字节, 乘2是因为16位真彩色*/
     len = 2 * Width * Height;
     
-    printf("len = %d  ", len);
-    
     i = 8; // 因为要跳过前七位
     
     while(i < (len + 8)) { 
@@ -1403,8 +1401,6 @@ void LCD_MixPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background
     /*len是字节数量, 所以下面代码是算图片有多少个字节, 乘2是因为16位真彩色*/
     len = 2 * Width * Height;
     
-    printf("len = %d  ", len);
-    
     i = 8; // 因为要跳过前七位
     
     while(i < (len + 8)) { 
@@ -1415,6 +1411,54 @@ void LCD_MixPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background
         i += 2;
         num += 2;
     }
+
+}
+
+void LCD_MergePicure(uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background) 
+{
+    uint32_t i = 0, j = 0, temp = 0;//k = 0;
+    
+    /*imageLcd软件勾选图片信息就前[0]到[7]位存储了此图片信息, 所以下面代码是算图片有多少个长宽，虽然可以不要这么麻烦, 直接传入标注大小*/
+    uint16_t Width = image->width;
+    uint16_t Height = image->height;
+
+    uint32_t num = (x + (y - 1) * ILI9341_LESS_PIXEL) * 2;
+    
+    ILI9341_OpenWindow(0, 0, ILI9341_LESS_PIXEL, ILI9341_MORE_PIXEL);//必须精确确认图片像素的宽和高
+    
+    ILI9341_Write_Cmd(CMD_SetPixel);
+
+    /*len是字节数量, 所以下面代码是算图片有多少个字节, 乘2是因为16位真彩色*/
+    //uint32_t len = 2 * Width * Height;
+    
+    for(i = 8; i < num + 8; i += 2) {
+        temp = (uint16_t)(background->pointer[i] << 8) | (uint16_t)(background->pointer[i + 1]);//一个像素点两位字节一起写进去
+        ILI9341_Write_Data(temp);
+    }
+
+    for(j = 0; j < Height; j++) {
+        for(i = 8; i < Width * 2 + 8; i += 2) {
+            temp = (uint16_t)(image->pointer[i] << 8) | (uint16_t)(image->pointer[i + 1]);//一个像素点两位字节一起写进去
+            //if(temp == 0x0000)
+                //temp = (uint16_t)(background->pointer[num] << 8) | (uint16_t)(background->pointer[num + 1]);
+            ILI9341_Write_Data(temp);
+            num += 2;
+        }
+//        for(k = num; k < (ILI9341_LESS_PIXEL - x + Width + x) * 2; k += 2) {
+//            temp = (uint16_t)(background->pointer[k] << 8) | (uint16_t)(background->pointer[k + 1]);
+//            num += 2;
+//        }
+    }
+    //i = 8; // 因为要跳过前七位
+    
+    // while(i < (len + 8)) { 
+    //     temp = (uint16_t)(image->pointer[i] << 8) | (uint16_t)(image->pointer[i + 1]);//一个像素点两位字节一起写进去
+    //     if(temp == 0x0000)
+    //         temp = (uint16_t)(background->pointer[num] << 8) | (uint16_t)(background->pointer[num + 1]);
+    //     ILI9341_Write_Data(temp);
+    //     i += 2;
+    //     num += 2;
+    // }
 
 }
 

@@ -9,10 +9,16 @@ int8_t Obj_Init(void) {
     IMAGE_LIB.Background.width = 240;
     IMAGE_LIB.Background.height = 320;
 
+    IMAGE_LIB.Enemy.pointer = enemy;
+    IMAGE_LIB.Enemy.width = 50;
+    IMAGE_LIB.Enemy.height = 70;
+
     IMAGE_LIB.Hero.pointer = flight;
     IMAGE_LIB.Hero.width = 40;
     IMAGE_LIB.Hero.height = 50;
-    
+
+    Create_Hero();
+
     EnemyList = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
 
     if(EnemyList == NULL)
@@ -26,7 +32,7 @@ int8_t Obj_Init(void) {
 
 int8_t Create_Hero(void) {
     Hero.loc_x = 100;
-    Hero.loc_y = 100;
+    Hero.loc_y = 200;
     Hero.speed = 5;
     Hero.status = Alive;
     Hero.life = 3;

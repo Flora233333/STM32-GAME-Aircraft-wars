@@ -584,14 +584,24 @@
               <FilePath>.\Hardware\fonts.h</FilePath>
             </File>
             <File>
-              <FileName>Key.c</FileName>
+              <FileName>bsp_xpt2046_lcd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Hardware\Key.c</FilePath>
+              <FilePath>.\Hardware\bsp_xpt2046_lcd.c</FilePath>
             </File>
             <File>
-              <FileName>Key.h</FileName>
+              <FileName>bsp_xpt2046_lcd.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Hardware\Key.h</FilePath>
+              <FilePath>.\Hardware\bsp_xpt2046_lcd.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_spi_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\bsp_spi_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_spi_flash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\bsp_spi_flash.h</FilePath>
             </File>
           </Files>
         </Group>

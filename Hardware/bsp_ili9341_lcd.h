@@ -7,66 +7,40 @@
 #include "bsp_usart.h"
 #include "object.h"
 
-/***************************************************************************************
-2^26 =0X0400 0000 = 64MB,每个 BANK 有4*64MB = 256MB
-64MB:FSMC_Bank1_NORSRAM1:0X6000 0000 ~ 0X63FF FFFF
-64MB:FSMC_Bank1_NORSRAM2:0X6400 0000 ~ 0X67FF FFFF
-64MB:FSMC_Bank1_NORSRAM3:0X6800 0000 ~ 0X6BFF FFFF
-64MB:FSMC_Bank1_NORSRAM4:0X6C00 0000 ~ 0X6FFF FFFF
 
-选择BANK1-BORSRAM1 连接 TFT，地址范围为0X6000 0000 ~ 0X63FF FFFF
-FSMC_A16 接LCD的DC(寄存器/数据选择)脚
-寄存器基地址 = 0X60000000
-RAM基地址 = 0X60020000 = 0X60000000+2^16*2 = 0X60000000 + 0X20000 = 0X60020000
-当选择不同的地址线时，地址要重新计算  
-****************************************************************************************/
+#define      FSMC_Addr_ILI9341_CMD         ( ( uint32_t ) 0x60000000 ) 
 
-/******************************* ILI9341 显示屏的 FSMC 参数定义 ***************************/
-//FSMC_Bank1_NORSRAM用于LCD命令操作的地址
-#define      FSMC_Addr_ILI9341_CMD         ( ( uint32_t ) 0x60000000 ) //FSMC_A16地址线当RS
+     
+#define      FSMC_Addr_ILI9341_DATA        ( ( uint32_t ) 0x60020000 ) 
 
-//FSMC_Bank1_NORSRAM用于LCD数据操作的地址      
-#define      FSMC_Addr_ILI9341_DATA        ( ( uint32_t ) 0x60020000 ) //FSMC_A16地址线当RS
 
-//由片选引脚决定的NOR/SRAM块
 #define      FSMC_Bank1_NORSRAMx           FSMC_Bank1_NORSRAM1
 
-
-
-/******************************* ILI9341 显示屏8080通讯引脚定义 ***************************/
-/******控制信号线******/
-//片选，选择NOR/SRAM块
 #define      ILI9341_CS_CLK                RCC_APB2Periph_GPIOD   
 #define      ILI9341_CS_PORT               GPIOD
 #define      ILI9341_CS_PIN                GPIO_Pin_7
 
-//DC引脚，使用FSMC的地址信号控制，本引脚决定了访问LCD时使用的地址
-//PD11为FSMC_A16
+
 #define      ILI9341_DC_CLK                RCC_APB2Periph_GPIOD   
 #define      ILI9341_DC_PORT               GPIOD
 #define      ILI9341_DC_PIN                GPIO_Pin_11
 
-//写使能
 #define      ILI9341_WR_CLK                RCC_APB2Periph_GPIOD   
 #define      ILI9341_WR_PORT               GPIOD
 #define      ILI9341_WR_PIN                GPIO_Pin_5
 
-//读使能
 #define      ILI9341_RD_CLK                RCC_APB2Periph_GPIOD   
 #define      ILI9341_RD_PORT               GPIOD
 #define      ILI9341_RD_PIN                GPIO_Pin_4
 
-//复位引脚
 #define      ILI9341_RST_CLK               RCC_APB2Periph_GPIOE
 #define      ILI9341_RST_PORT              GPIOE
 #define      ILI9341_RST_PIN               GPIO_Pin_1
 
-//背光引脚
 #define      ILI9341_BK_CLK                RCC_APB2Periph_GPIOD    
 #define      ILI9341_BK_PORT               GPIOD
 #define      ILI9341_BK_PIN                GPIO_Pin_12
 
-/********数据信号线***************/
 #define      ILI9341_D0_CLK                RCC_APB2Periph_GPIOD   
 #define      ILI9341_D0_PORT               GPIOD
 #define      ILI9341_D0_PIN                GPIO_Pin_14
@@ -131,56 +105,47 @@ RAM基地址 = 0X60020000 = 0X60000000+2^16*2 = 0X60000000 + 0X20000 = 0X60020000
 #define      ILI9341_D15_PORT               GPIOD
 #define      ILI9341_D15_PIN                GPIO_Pin_10
 
-/*************************************** 调试预用 ******************************************/
 #define      DEBUG_DELAY()                
 
-/***************************** ILI934 显示区域的起始坐标和总行列数 ***************************/
-#define      ILI9341_DispWindow_X_Star		    0     //起始点的X坐标
-#define      ILI9341_DispWindow_Y_Star		    0     //起始点的Y坐标
 
-#define 			ILI9341_LESS_PIXEL	  							240			//液晶屏较短方向的像素宽度
-#define 			ILI9341_MORE_PIXEL	 							320			//液晶屏较长方向的像素宽度
+#define      ILI9341_DispWindow_X_Star		    0     
+#define      ILI9341_DispWindow_Y_Star		    0     
 
-//根据液晶扫描方向而变化的XY像素宽度
-//调用ILI9341_GramScan函数设置方向时会自动更改
+#define 			ILI9341_LESS_PIXEL	  							240			
+#define 			ILI9341_MORE_PIXEL	 							320			
+
 extern uint16_t LCD_X_LENGTH,LCD_Y_LENGTH; 
 
-//液晶屏扫描模式
-//参数可选值为0-7
+
 extern uint8_t LCD_SCAN_MODE;
 
-/******************************* 定义 ILI934 显示屏常用颜色 ********************************/
-#define      BACKGROUND		                BLACK   //默认背景颜色
 
-#define      WHITE		 		           0xFFFF	   //白色
-#define      BLACK                         0x0000	   //黑色 
-#define      GREY                          0xF7DE	   //灰色 
-#define      BLUE                          0x001F	   //蓝色 
-#define      BLUE2                         0x051F	   //浅蓝色 
-#define      RED                           0xF800	   //红色 
-#define      MAGENTA                       0xF81F	   //红紫色，洋红色 
-#define      GREEN                         0x07E0	   //绿色 
-#define      CYAN                          0x7FFF	   //蓝绿色，青色 
-#define      YELLOW                        0xFFE0	   //黄色 
+#define      BACKGROUND		                BLACK  
+
+#define      WHITE		 		           0xFFFF	   
+#define      BLACK                         0x0000	   
+#define      GREY                          0xF7DE	   
+#define      BLUE                          0x001F	   
+#define      BLUE2                         0x051F	   
+#define      RED                           0xF800	   
+#define      MAGENTA                       0xF81F	   
+#define      GREEN                         0x07E0	   
+#define      CYAN                          0x7FFF	   
+#define      YELLOW                        0xFFE0	   
 #define      BRED                          0xF81F
 #define      GRED                          0xFFE0
 #define      GBLUE                         0x07FF
 #define      orgin                         0XF420
 
+#define      CMD_SetCoordinateX		 		    0x2A	     
+#define      CMD_SetCoordinateY		 		    0x2B	     
+#define      CMD_SetPixel		 		        0x2C	     
 
-/******************************* 定义 ILI934 常用命令 ********************************/
-#define      CMD_SetCoordinateX		 		    0x2A	     //设置X坐标
-#define      CMD_SetCoordinateY		 		    0x2B	     //设置Y坐标
-#define      CMD_SetPixel		 		        0x2C	     //填充像素
-
-
-/* 定义 LCD 驱动芯片 ID */
 #define     LCDID_UNKNOWN             0
 #define     LCDID_ILI9341             0x9341
 #define     LCDID_ST7789V             0x8552
 
 
-/********************************** 声明 ILI934 函数 ***************************************/
 void                     ILI9341_Init                    ( void );
 uint16_t                 ILI9341_ReadID                 ( void );
 void                     ILI9341_Rst                     ( void );
@@ -209,6 +174,8 @@ void 					 LCD_GetColors					 (uint16_t *TextColor, uint16_t *BackColor);
 void                     LCD_DrawPicure                  (uint8_t x, uint8_t y, OBJ_IMAGE *image);
 //void                     Draw_BMP                        (uint16_t usX, uint16_t usY, uint16_t Width, uint16_t Height);
 void                     LCD_MixPicure                   (uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background);
+void                     LCD_MergePicure                 (uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background);
+ 
 #endif /* __BSP_ILI9341_ILI9341_H */
 
 
