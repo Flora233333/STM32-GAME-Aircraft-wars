@@ -19,10 +19,10 @@
  */
 static TaskHandle_t AppTaskCreate_Handle = NULL;/* 创建任务句柄 */
 static TaskHandle_t Print_Handle = NULL;
-static TaskHandle_t Uart_Handle = NULL;
+static TaskHandle_t Bullet_Handle = NULL;
 static TaskHandle_t Create_Handle = NULL;
 static TaskHandle_t Updata_Handle = NULL;
-static TaskHandle_t Key_Handle = NULL;
+static TaskHandle_t Touch_Handle = NULL;
 //static TaskHandle_t Print_TaskHandle = NULL;
 
 //static TaskHandle_t Test_Task_Handle = NULL;/* LED任务句柄 */
@@ -56,10 +56,10 @@ static TaskHandle_t Key_Handle = NULL;
 */
 static void AppTaskCreate(void);/* 用于创建任务 */
 static void Print_Image(void *parm);
-static void Uart_Send(void *parm);
+static void Bullet_Manage(void *parm);
 static void Create_EnemyFlight(void *parm);
 static void Updata_location(void *parm);
-static void Press_Key(void *parm);
+static void Touch_Detect(void *parm);
 
 static void BSP_Init(void);/* 用于初始化板载相关资源 */
 
@@ -120,12 +120,12 @@ static void AppTaskCreate(void)
                         (UBaseType_t    )2, 
                         (TaskHandle_t*  )&Print_Handle);
 
-    xReturn2 = xTaskCreate((TaskFunction_t )Uart_Send,  
-                        (const char*    )"Uart_Send",
+    xReturn2 = xTaskCreate((TaskFunction_t )Bullet_Manage,  
+                        (const char*    )"Bullet_Manage",
                         (uint16_t       )512,  
                         (void*          )NULL,
                         (UBaseType_t    )2, 
-                        (TaskHandle_t*  )&Uart_Handle);
+                        (TaskHandle_t*  )&Bullet_Handle);
 
     xReturn3 = xTaskCreate((TaskFunction_t )Create_EnemyFlight,  
                         (const char*    )"Create_EnemyFlight",
@@ -141,12 +141,12 @@ static void AppTaskCreate(void)
                         (UBaseType_t    )2, 
                         (TaskHandle_t*  )&Updata_Handle);
 
-    xReturn5 = xTaskCreate((TaskFunction_t )Press_Key,  
-                        (const char*    )"Press_Key",
+    xReturn5 = xTaskCreate((TaskFunction_t )Touch_Detect,  
+                        (const char*    )"Touch_Detect",
                         (uint16_t       )128,  
                         (void*          )NULL,
                         (UBaseType_t    )2, 
-                        (TaskHandle_t*  )&Key_Handle);
+                        (TaskHandle_t*  )&Touch_Handle);
                         
     if(xReturn1 == pdPASS && xReturn2 == pdPASS &&
         xReturn3 == pdPASS && xReturn4 == pdPASS && xReturn5 == pdPASS)
@@ -161,7 +161,8 @@ static void Print_Image(void *parm) {
 
   //uint8_t status = 0;
   //uint8_t flag = 0;
-    
+    uint8_t i = 0;
+
     while(1) {
         taskENTER_CRITICAL();  
        
@@ -178,25 +179,41 @@ static void Print_Image(void *parm) {
             Hero.loc_y = 270;
         
         LCD_MixPicure(Hero.loc_x, Hero.loc_y, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
+
+        
         
         LCD_MixPicure(150, 100, &IMAGE_LIB.Enemy, &IMAGE_LIB.Background);
 
-        LCD_MixPicure(Hero.loc_x + 17, Hero.loc_y - 12, &IMAGE_LIB.Bullet, &IMAGE_LIB.Background);
+        for (i = 0; i < 20; i++) {
+            if(Bullets[i].status == Alive)
+                LCD_MixPicure(Bullets[i].loc_x, Bullets[i].loc_y, &IMAGE_LIB.Bullet, &IMAGE_LIB.Background);
+        }
         
-        vTaskDelay(10);
-        taskEXIT_CRITICAL();  
+
+        
+        taskEXIT_CRITICAL();
+
+        vTaskDelay(10);  
     }
 }
 
-static void Uart_Send(void *parm) {
+static void Bullet_Manage(void *parm) {
 
     //uint8_t status = 0;
     //uint8_t flag = 0;
+    uint8_t i = 0;
 
     while(1) {
-      
+
+        for (i = 0; i < 20; i++) {
+            if(Bullets[i].loc_y < 5) {
+                Bullets[i].status = Destroy;
+            }
+        }
+
+        Create_Bullet();
     
-      
+        vTaskDelay(60); 
     }
 }
 
@@ -204,11 +221,10 @@ static void Create_EnemyFlight(void *parm) {
 
     //uint8_t status = 0;
     //uint8_t flag = 0;
-
+    //uint8_t i = 0;
     while(1) {
-      
-    
-      
+        
+        
     }
 }
 
@@ -216,14 +232,20 @@ static void Updata_location(void *parm) {
 
     //uint8_t status = 0;
     //uint8_t flag = 0;
+    uint8_t i = 0;
 
     while(1) {
 
-      
+        for (i = 0; i < 20; i++) {
+            if(Bullets[i].status == Alive)
+                Bullets[i].loc_y -= Bullets[i].speed;
+        }
+
+        vTaskDelay(5);
     }
 }
 
-static void Press_Key(void *parm) {
+static void Touch_Detect(void *parm) {
 
     //uint8_t status = 0;
     //uint8_t flag = 0;

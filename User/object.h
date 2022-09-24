@@ -63,9 +63,12 @@ typedef enum {
 extern OBJ_HERO Hero;
 extern OBJ_ENEMY_LIST *EnemyList;
 extern IMAGE IMAGE_LIB;
+extern OBJ_Bullet Bullets[20];
 
 int8_t Obj_Init(void);
+void Image_Init(void);
 int8_t Create_Hero(void);
 int8_t Create_Enemy(void);
+int8_t Create_Bullet(void);
 
 #endif
