@@ -19,26 +19,27 @@ typedef struct IMAGE {
     OBJ_IMAGE BOOM1;
     OBJ_IMAGE BOOM2;
     OBJ_IMAGE Destroy;
+    OBJ_IMAGE Bullet;
 } IMAGE;
 
 typedef struct OBJ_Bullet {
-    uint16_t loc_x;
-    uint16_t loc_y;
+    int16_t loc_x;
+    int16_t loc_y;
     uint8_t status;
     uint8_t speed;
 } OBJ_Bullet;
 
 typedef struct OBJ_ENEMY {
-    uint16_t loc_x;
-    uint16_t loc_y;
+    int16_t loc_x;
+    int16_t loc_y;
     uint8_t status;
     uint8_t speed;
     uint8_t life;
 } OBJ_ENEMY;
 
 typedef struct OBJ_HERO {
-    uint16_t loc_x;
-    uint16_t loc_y;
+    int16_t loc_x;
+    int16_t loc_y;
     uint8_t status;
     uint8_t speed;
     uint8_t life;

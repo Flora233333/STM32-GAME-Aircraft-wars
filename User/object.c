@@ -17,6 +17,10 @@ int8_t Obj_Init(void) {
     IMAGE_LIB.Hero.width = 40;
     IMAGE_LIB.Hero.height = 50;
 
+    IMAGE_LIB.Bullet.pointer = bullet;
+    IMAGE_LIB.Bullet.width = 6;
+    IMAGE_LIB.Bullet.height = 12;
+
     Create_Hero();
 
     EnemyList = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));

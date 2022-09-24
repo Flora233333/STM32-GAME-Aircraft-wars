@@ -1384,7 +1384,7 @@ void LCD_DrawPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image)
 
 }
 
-void LCD_MixPicure(uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background) 
+void LCD_MixPicure(int16_t x, int16_t y, OBJ_IMAGE *image, OBJ_IMAGE *background) 
 {
     uint32_t i = 0, len = 0, temp = 0;
     

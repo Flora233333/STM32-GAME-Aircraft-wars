@@ -173,7 +173,7 @@ void 					 LCD_GetColors					 (uint16_t *TextColor, uint16_t *BackColor);
 
 void                     LCD_DrawPicure                  (uint8_t x, uint8_t y, OBJ_IMAGE *image);
 //void                     Draw_BMP                        (uint16_t usX, uint16_t usY, uint16_t Width, uint16_t Height);
-void                     LCD_MixPicure                   (uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background);
+void                     LCD_MixPicure                   (int16_t x, int16_t y, OBJ_IMAGE *image, OBJ_IMAGE *background);
 void                     LCD_MergePicure                 (uint8_t x, uint8_t y, OBJ_IMAGE *image, OBJ_IMAGE *background);
  
 #endif /* __BSP_ILI9341_ILI9341_H */

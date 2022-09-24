@@ -25,6 +25,7 @@ extern sFONT Font8x16;
 extern const unsigned char background[153608];
 extern const unsigned char flight[4008];
 extern const unsigned char enemy[7008];
+extern const unsigned char bullet[152];
 
 //要支持中文需要实现本函数，可参考“液晶显示中英文（字库在外部FLASH）”例程
 #define      GetGBKCode( ucBuffer, usChar ) 

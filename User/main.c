@@ -167,9 +167,21 @@ static void Print_Image(void *parm) {
        
         LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
         //LCD_DrawPicure(100, 100, &IMAGE_LIB.Hero);
+        if(Hero.loc_x < 5)
+            Hero.loc_x = 5;
+        if(Hero.loc_x > 190)
+            Hero.loc_x = 190;
+        
+        if(Hero.loc_y < 5)
+            Hero.loc_y = 5;
+        if(Hero.loc_y > 270)
+            Hero.loc_y = 270;
+        
         LCD_MixPicure(Hero.loc_x, Hero.loc_y, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
-
+        
         LCD_MixPicure(150, 100, &IMAGE_LIB.Enemy, &IMAGE_LIB.Background);
+
+        LCD_MixPicure(Hero.loc_x + 17, Hero.loc_y - 12, &IMAGE_LIB.Bullet, &IMAGE_LIB.Background);
         
         vTaskDelay(10);
         taskEXIT_CRITICAL();  
