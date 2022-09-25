@@ -167,7 +167,7 @@ static void Print_Image(void *parm) {
         taskENTER_CRITICAL();  
        
         LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
-        //LCD_DrawPicure(100, 100, &IMAGE_LIB.Hero);
+        
         if(Hero.loc_x < 5)
             Hero.loc_x = 5;
         if(Hero.loc_x > 190)
@@ -230,6 +230,7 @@ static void Updata_location(void *parm) {
     //uint8_t status = 0;
     //uint8_t flag = 0;
     uint8_t i = 0;
+    uint8_t j = 0;
 
     while(1) {
         
@@ -240,8 +241,28 @@ static void Updata_location(void *parm) {
         }
         
         for (i = 0; i < 5; i++) {
-            if(Enemys[i].loc_y > 260) {
+            if(Enemys[i].loc_y > 260 || Enemys[i].life <= 0) {
                 Enemys[i].status = Destroy;
+            }
+        }
+
+        for (i = 0; i < 20; i++) {
+            
+            if(Bullets[i].status == Alive) {
+
+                for (j = 0; j < 5; j++) {
+
+                    if(Enemys[j].status == Alive) {
+
+                        if(Bullets[i].loc_x >= Enemys[j].loc_x + 5 && Bullets[i].loc_x <= Enemys[j].loc_x + 45) {
+
+                            if(Bullets[i].loc_y <= Enemys[j].loc_y + 65) {
+                                Enemys[j].life--;
+                                Bullets[i].status = Destroy;
+                            }
+                        }
+                    }
+                }
             }
         }
 
