@@ -64,6 +64,7 @@ extern OBJ_HERO Hero;
 extern OBJ_ENEMY_LIST *EnemyList;
 extern IMAGE IMAGE_LIB;
 extern OBJ_Bullet Bullets[20];
+extern OBJ_ENEMY Enemys[5];
 
 int8_t Obj_Init(void);
 void Image_Init(void);

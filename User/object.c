@@ -1,9 +1,10 @@
 #include "object.h"
 
 OBJ_HERO Hero;
-OBJ_ENEMY_LIST *EnemyList;
+//OBJ_ENEMY_LIST *EnemyList;
 IMAGE IMAGE_LIB;
 OBJ_Bullet Bullets[20];
+OBJ_ENEMY Enemys[5];
 
 int8_t Obj_Init(void) {
     uint8_t i = 0;
@@ -12,23 +13,25 @@ int8_t Obj_Init(void) {
 
     Create_Hero();
 
-    for (i = 0; i < 20; i++)
-    {
+    for (i = 0; i < 20; i++) {
         OBJ_Bullet bullet;
         bullet.status = Destroy;
         Bullets[i] = bullet;
     }
 
-    Create_Bullet();
+     for (i = 0; i < 5; i++) {
+        OBJ_ENEMY enemy;
+        enemy.status = Destroy;
+        Enemys[i] = enemy;
+    }
     
+    // EnemyList = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
 
-    EnemyList = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
+    // if(EnemyList == NULL)
+    //     return -1;
 
-    if(EnemyList == NULL)
-        return -1;
-
-    EnemyList->next = NULL;
-    EnemyList->lenth = 0;
+    // EnemyList->next = NULL;
+    // EnemyList->lenth = 0;
 
     return 0;
 }
@@ -67,7 +70,7 @@ int8_t Create_Bullet(void) {
     OBJ_Bullet bullet;
     bullet.loc_x = Hero.loc_x + 17;
     bullet.loc_y = Hero.loc_y - 12;
-    bullet.speed = 2;
+    bullet.speed = 4;
     bullet.status = Alive;
 
     for(i = 0;i < 20; i++) {
@@ -81,41 +84,70 @@ int8_t Create_Bullet(void) {
     return flag;
 }
 
+uint8_t random_number[] = {20, 170, 80, 30, 120};
+
 int8_t Create_Enemy(void) {
-    OBJ_ENEMY_LIST *p = NULL;
-    OBJ_ENEMY_LIST *obj = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
+    uint8_t i = 0;
+    int8_t flag = -1;
+    static uint8_t num = 0;
+    OBJ_ENEMY enemy;
+    enemy.loc_x = random_number[num];
+    enemy.loc_y = -60;
 
-    if(obj == NULL)
-        return -1;
+    if(++num > 5)
+        num = 0;
 
-    obj->enemy.loc_x = 10;
-    obj->enemy.loc_y = 10;
-    obj->enemy.speed = 3;
-    obj->enemy.status = Alive;
-    obj->enemy.life = 3;
-    obj->next = NULL;
+    enemy.speed = 1;
+    enemy.status = Alive;
+    enemy.life = 10;
 
-    if(EnemyList->next == NULL) 
-    {
-        EnemyList->next = obj;
-    }
-    else
-    {
-        p = EnemyList->next;
-        while(1) 
-        {
-            if(p->next == NULL)
-            {
-                p->next = obj;
-                break;
-            }
-            else
-            {
-                p = p->next;
-            }
+    for(i = 0;i < 5; i++) {
+        if(Enemys[i].status == Destroy) {
+            Enemys[i] = enemy;
+            flag = 1;
+            break;
         }
-
     }
-   
-    return 0;
+
+    return flag;
 }
+
+
+// int8_t Create_Enemy(void) {
+//     OBJ_ENEMY_LIST *p = NULL;
+//     OBJ_ENEMY_LIST *obj = (OBJ_ENEMY_LIST*)malloc(sizeof(OBJ_ENEMY_LIST));
+
+//     if(obj == NULL)
+//         return -1;
+
+//     obj->enemy.loc_x = 10;
+//     obj->enemy.loc_y = 10;
+//     obj->enemy.speed = 3;
+//     obj->enemy.status = Alive;
+//     obj->enemy.life = 3;
+//     obj->next = NULL;
+
+//     if(EnemyList->next == NULL) 
+//     {
+//         EnemyList->next = obj;
+//     }
+//     else
+//     {
+//         p = EnemyList->next;
+//         while(1) 
+//         {
+//             if(p->next == NULL)
+//             {
+//                 p->next = obj;
+//                 break;
+//             }
+//             else
+//             {
+//                 p = p->next;
+//             }
+//         }
+
+//     }
+   
+//     return 0;
+// }

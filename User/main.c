@@ -180,15 +180,15 @@ static void Print_Image(void *parm) {
         
         LCD_MixPicure(Hero.loc_x, Hero.loc_y, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
 
-        
-        
-        LCD_MixPicure(150, 100, &IMAGE_LIB.Enemy, &IMAGE_LIB.Background);
-
         for (i = 0; i < 20; i++) {
             if(Bullets[i].status == Alive)
                 LCD_MixPicure(Bullets[i].loc_x, Bullets[i].loc_y, &IMAGE_LIB.Bullet, &IMAGE_LIB.Background);
         }
         
+        for (i = 0; i < 5; i++) {
+            if(Enemys[i].status == Alive)
+                LCD_MixPicure(Enemys[i].loc_x, Enemys[i].loc_y, &IMAGE_LIB.Enemy, &IMAGE_LIB.Background);
+        }
 
         
         taskEXIT_CRITICAL();
@@ -201,15 +201,9 @@ static void Bullet_Manage(void *parm) {
 
     //uint8_t status = 0;
     //uint8_t flag = 0;
-    uint8_t i = 0;
+    //uint8_t i = 0;
 
     while(1) {
-
-        for (i = 0; i < 20; i++) {
-            if(Bullets[i].loc_y < 5) {
-                Bullets[i].status = Destroy;
-            }
-        }
 
         Create_Bullet();
     
@@ -222,9 +216,12 @@ static void Create_EnemyFlight(void *parm) {
     //uint8_t status = 0;
     //uint8_t flag = 0;
     //uint8_t i = 0;
+    
     while(1) {
-        
-        
+
+        Create_Enemy();
+
+        vTaskDelay(800);
     }
 }
 
@@ -235,13 +232,31 @@ static void Updata_location(void *parm) {
     uint8_t i = 0;
 
     while(1) {
+        
+        for (i = 0; i < 20; i++) {
+            if(Bullets[i].loc_y < 5) {
+                Bullets[i].status = Destroy;
+            }
+        }
+        
+        for (i = 0; i < 5; i++) {
+            if(Enemys[i].loc_y > 260) {
+                Enemys[i].status = Destroy;
+            }
+        }
 
         for (i = 0; i < 20; i++) {
             if(Bullets[i].status == Alive)
                 Bullets[i].loc_y -= Bullets[i].speed;
         }
 
-        vTaskDelay(5);
+        for (i = 0; i < 5; i++) {
+            if(Enemys[i].status == Alive)
+                Enemys[i].loc_y += Enemys[i].speed;
+        }
+
+
+        vTaskDelay(10);
     }
 }
 
