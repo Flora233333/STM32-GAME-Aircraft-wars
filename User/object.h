@@ -35,6 +35,7 @@ typedef struct OBJ_ENEMY {
     uint8_t status;
     uint8_t speed;
     uint8_t life;
+    uint8_t hasDead;
 } OBJ_ENEMY;
 
 typedef struct OBJ_HERO {
@@ -44,6 +45,7 @@ typedef struct OBJ_HERO {
     uint8_t speed;
     uint8_t life;
     uint8_t dir;
+    char score;
 } OBJ_HERO;
 
 typedef struct OBJ_ENEMY_LIST {

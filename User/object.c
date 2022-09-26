@@ -22,6 +22,7 @@ int8_t Obj_Init(void) {
      for (i = 0; i < 5; i++) {
         OBJ_ENEMY enemy;
         enemy.status = Destroy;
+        enemy.hasDead = 1;
         Enemys[i] = enemy;
     }
     
@@ -45,6 +46,14 @@ void Image_Init(void) {
     IMAGE_LIB.Enemy.width = 50;
     IMAGE_LIB.Enemy.height = 70;
 
+    IMAGE_LIB.BOOM1.pointer = boom1;
+    IMAGE_LIB.BOOM1.width = 50;
+    IMAGE_LIB.BOOM1.height = 70;
+
+    IMAGE_LIB.BOOM2.pointer = boom2;
+    IMAGE_LIB.BOOM2.width = 50;
+    IMAGE_LIB.BOOM2.height = 70;
+
     IMAGE_LIB.Hero.pointer = flight;
     IMAGE_LIB.Hero.width = 40;
     IMAGE_LIB.Hero.height = 50;
@@ -61,6 +70,7 @@ int8_t Create_Hero(void) {
     Hero.status = Alive;
     Hero.life = 3;
     Hero.dir = 0;
+    Hero.score = 0;
     return 0;
 }
 
@@ -100,6 +110,7 @@ int8_t Create_Enemy(void) {
     enemy.speed = 1;
     enemy.status = Alive;
     enemy.life = 10;
+    enemy.hasDead = 0;
 
     for(i = 0;i < 5; i++) {
         if(Enemys[i].status == Destroy) {

@@ -157,6 +157,16 @@ static void AppTaskCreate(void)
     taskEXIT_CRITICAL();            //退出临界区
 }
 
+/*
+    TODO:
+    1.实现计分板 AC
+    2.实现爆炸效果 AC
+    3.飞机之间的碰撞检测
+    4.敌机发射子弹
+    5.主机受伤显示
+    6.主机受伤爆炸
+*/
+
 static void Print_Image(void *parm) {
 
   //uint8_t status = 0;
@@ -186,8 +196,36 @@ static void Print_Image(void *parm) {
         }
         
         for (i = 0; i < 5; i++) {
-            if(Enemys[i].status == Alive)
+            
+            switch (Enemys[i].status)
+            {
+            case Alive:
                 LCD_MixPicure(Enemys[i].loc_x, Enemys[i].loc_y, &IMAGE_LIB.Enemy, &IMAGE_LIB.Background);
+                break;
+
+            case Boom1:
+                LCD_MixPicure(Enemys[i].loc_x, Enemys[i].loc_y, &IMAGE_LIB.BOOM1, &IMAGE_LIB.Background);
+
+                vTaskDelay(50);
+                Enemys[i].status = Boom2;
+                break;
+
+            case Boom2:
+                LCD_MixPicure(Enemys[i].loc_x, Enemys[i].loc_y, &IMAGE_LIB.BOOM2, &IMAGE_LIB.Background);
+            
+                vTaskDelay(50);
+                Enemys[i].status = Destroy;
+                break;
+
+            case Destroy:
+                break;
+
+            default:
+                break;
+            } 
+
+            //ILI9341_DispChar_EN(100, 100, Hero.score + '0');
+
         }
 
         
@@ -241,15 +279,16 @@ static void Updata_location(void *parm) {
         }
         
         for (i = 0; i < 5; i++) {
-            if(Enemys[i].loc_y > 260 || Enemys[i].life <= 0) {
-                Enemys[i].status = Destroy;
+            if((Enemys[i].loc_y > 260 || Enemys[i].life <= 0) && Enemys[i].hasDead == 0) {
+                Enemys[i].status = Boom1;
+                Enemys[i].hasDead = 1;
             }
         }
 
         for (i = 0; i < 20; i++) {
             
             if(Bullets[i].status == Alive) {
-
+                
                 for (j = 0; j < 5; j++) {
 
                     if(Enemys[j].status == Alive) {
@@ -259,6 +298,7 @@ static void Updata_location(void *parm) {
                             if(Bullets[i].loc_y <= Enemys[j].loc_y + 65) {
                                 Enemys[j].life--;
                                 Bullets[i].status = Destroy;
+                                
                             }
                         }
                     }
@@ -324,7 +364,8 @@ static void BSP_Init(void)
     
     Obj_Init();
     
-    LCD_SetColors(BLACK, BLACK);
+    LCD_SetFont(&Font16x24);
+    LCD_SetColors(RED, BLACK);
     ILI9341_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);
 }
 
