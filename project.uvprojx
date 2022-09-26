@@ -603,6 +603,16 @@
               <FileType>5</FileType>
               <FilePath>.\Hardware\bsp_spi_flash.h</FilePath>
             </File>
+            <File>
+              <FileName>bsp_beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\bsp_beep.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_beep.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\bsp_beep.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

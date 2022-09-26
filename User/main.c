@@ -5,11 +5,13 @@
 */ 
 /* FreeRTOS头文件 */
 #include "FreeRTOS.h"
+#include "semphr.h"
 #include "task.h"
 /* 开发板硬件bsp头文件 */
 #include "bsp_ili9341_lcd.h"
 #include "bsp_xpt2046_lcd.h"
 #include "bsp_usart.h"
+#include "bsp_beep.h"
 #include "object.h"
 /**************************** 任务句柄 ********************************/
 /* 
@@ -23,8 +25,9 @@ static TaskHandle_t Bullet_Handle = NULL;
 static TaskHandle_t Create_Handle = NULL;
 static TaskHandle_t Updata_Handle = NULL;
 static TaskHandle_t Touch_Handle = NULL;
-//static TaskHandle_t Print_TaskHandle = NULL;
+static TaskHandle_t Beep_Handle = NULL;
 
+//static TaskHandle_t Print_TaskHandle = NULL;
 //static TaskHandle_t Test_Task_Handle = NULL;/* LED任务句柄 */
 //static TaskHandle_t KEY_Task_Handle = NULL;/* KEY任务句柄 */
 
@@ -40,6 +43,7 @@ static TaskHandle_t Touch_Handle = NULL;
  * 
  */
 
+SemaphoreHandle_t xBeepOn;
 
 /******************************* 全局变量声明 ************************************/
 /*
@@ -60,6 +64,7 @@ static void Bullet_Manage(void *parm);
 static void Create_EnemyFlight(void *parm);
 static void Updata_location(void *parm);
 static void Touch_Detect(void *parm);
+static void Beep_Control(void *parm);
 
 static void BSP_Init(void);/* 用于初始化板载相关资源 */
 
@@ -77,6 +82,8 @@ int main(void)
     
     /* 开发板硬件初始化 */
     BSP_Init();
+
+    xBeepOn = xSemaphoreCreateBinary(); //击杀互斥信号量
         
     /* 创建AppTaskCreate任务 */
     xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* 任务入口函数 */
@@ -110,6 +117,7 @@ static void AppTaskCreate(void)
     BaseType_t xReturn3 = pdPASS;
     BaseType_t xReturn4 = pdPASS;
     BaseType_t xReturn5 = pdPASS;
+    BaseType_t xReturn6 = pdPASS;
   
     taskENTER_CRITICAL();           //进入临界区
 
@@ -148,8 +156,15 @@ static void AppTaskCreate(void)
                         (UBaseType_t    )2, 
                         (TaskHandle_t*  )&Touch_Handle);
                         
-    if(xReturn1 == pdPASS && xReturn2 == pdPASS &&
-        xReturn3 == pdPASS && xReturn4 == pdPASS && xReturn5 == pdPASS)
+    xReturn6 = xTaskCreate((TaskFunction_t )Beep_Control,  
+                        (const char*    )"Beep_Control",
+                        (uint16_t       )128,  
+                        (void*          )NULL,
+                        (UBaseType_t    )2, 
+                        (TaskHandle_t*  )&Beep_Handle);
+                        
+    if(xReturn1 == pdPASS && xReturn2 == pdPASS && xReturn3 == pdPASS && 
+    xReturn4 == pdPASS && xReturn5 == pdPASS && xReturn6 == pdPASS)
         printf("创建任务成功!\r\n");
    
     vTaskDelete(AppTaskCreate_Handle); //删除AppTaskCreate任务
@@ -206,7 +221,6 @@ static void Print_Image(void *parm) {
             case Boom1:
                 LCD_MixPicure(Enemys[i].loc_x, Enemys[i].loc_y, &IMAGE_LIB.BOOM1, &IMAGE_LIB.Background);
 
-                vTaskDelay(50);
                 Enemys[i].status = Boom2;
                 break;
 
@@ -272,6 +286,8 @@ static void Updata_location(void *parm) {
 
     while(1) {
         
+        vTaskSuspendAll();
+        
         for (i = 0; i < 20; i++) {
             if(Bullets[i].loc_y < 5) {
                 Bullets[i].status = Destroy;
@@ -282,6 +298,8 @@ static void Updata_location(void *parm) {
             if((Enemys[i].loc_y > 260 || Enemys[i].life <= 0) && Enemys[i].hasDead == 0) {
                 Enemys[i].status = Boom1;
                 Enemys[i].hasDead = 1;
+                
+                xSemaphoreGive(xBeepOn);
             }
         }
 
@@ -316,7 +334,8 @@ static void Updata_location(void *parm) {
                 Enemys[i].loc_y += Enemys[i].speed;
         }
 
-
+        xTaskResumeAll();
+        
         vTaskDelay(10);
     }
 }
@@ -333,6 +352,17 @@ static void Touch_Detect(void *parm) {
 
         xTaskResumeAll();
     }
+}
+
+static void Beep_Control(void *parm) {
+
+    while(1) {
+        xSemaphoreTake(xBeepOn, portMAX_DELAY);
+        BEEP(ON);
+        vTaskDelay(50);
+        BEEP(OFF);
+    }
+
 }
 
 
@@ -359,6 +389,8 @@ static void BSP_Init(void)
     
 	/* 串口初始化	*/
 	USART_Config();
+    
+    BEEP_GPIO_Config();
     
     ILI9341_GramScan(6); //LCD模式六
     
