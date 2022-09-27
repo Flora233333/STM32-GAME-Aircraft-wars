@@ -4,6 +4,7 @@ OBJ_HERO Hero;
 //OBJ_ENEMY_LIST *EnemyList;
 IMAGE IMAGE_LIB;
 OBJ_Bullet Bullets[20];
+OBJ_Bullet Enemy_Bullets[20];
 OBJ_ENEMY Enemys[5];
 
 int8_t Obj_Init(void) {
@@ -17,6 +18,12 @@ int8_t Obj_Init(void) {
         OBJ_Bullet bullet;
         bullet.status = Destroy;
         Bullets[i] = bullet;
+    }
+
+    for (i = 0; i < 20; i++) {
+        OBJ_Bullet bullet;
+        bullet.status = Destroy;
+        Enemy_Bullets[i] = bullet;
     }
 
      for (i = 0; i < 5; i++) {
@@ -80,7 +87,7 @@ int8_t Create_Bullet(void) {
     OBJ_Bullet bullet;
     bullet.loc_x = Hero.loc_x + 17;
     bullet.loc_y = Hero.loc_y - 12;
-    bullet.speed = 4;
+    bullet.speed = 5;
     bullet.status = Alive;
 
     for(i = 0;i < 20; i++) {
@@ -94,7 +101,28 @@ int8_t Create_Bullet(void) {
     return flag;
 }
 
-uint8_t random_number[] = {20, 170, 80, 30, 120};
+int8_t Enemy_Bullet(OBJ_ENEMY *enemy) {
+    uint8_t i = 0;
+    int8_t flag = -1;
+    OBJ_Bullet bullet;
+
+    bullet.loc_x = enemy->loc_x + 25;
+    bullet.loc_y = enemy->loc_y + 65;  
+    bullet.speed = 2;
+    bullet.status = Alive;
+
+    for(i = 0; i < 20; i++) {
+        if(Enemy_Bullets[i].status == Destroy) {
+            Enemy_Bullets[i] = bullet;
+            flag = 1;
+            break;
+        }
+    }
+
+    return flag;
+}
+
+uint8_t random_number[] = {20, 170, 80, 30, 120, 50, 180, 140, 100, 10, 80, 130};
 
 int8_t Create_Enemy(void) {
     uint8_t i = 0;
@@ -104,12 +132,12 @@ int8_t Create_Enemy(void) {
     enemy.loc_x = random_number[num];
     enemy.loc_y = -60;
 
-    if(++num > 5)
+    if(++num >= 12)
         num = 0;
 
     enemy.speed = 1;
     enemy.status = Alive;
-    enemy.life = 10;
+    enemy.life = 8;
     enemy.hasDead = 0;
 
     for(i = 0;i < 5; i++) {

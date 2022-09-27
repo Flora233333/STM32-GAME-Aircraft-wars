@@ -174,10 +174,8 @@ static void AppTaskCreate(void)
 
 /*
     TODO:
-    1.实现计分板 AC
-    2.实现爆炸效果 AC
     3.飞机之间的碰撞检测
-    4.敌机发射子弹
+    4.敌机发射子弹 AC
     5.主机受伤显示
     6.主机受伤爆炸
 */
@@ -189,6 +187,7 @@ static void Print_Image(void *parm) {
     uint8_t i = 0;
 
     while(1) {
+
         taskENTER_CRITICAL();  
        
         LCD_DrawPicure(0, 0, &IMAGE_LIB.Background);
@@ -208,6 +207,11 @@ static void Print_Image(void *parm) {
         for (i = 0; i < 20; i++) {
             if(Bullets[i].status == Alive)
                 LCD_MixPicure(Bullets[i].loc_x, Bullets[i].loc_y, &IMAGE_LIB.Bullet, &IMAGE_LIB.Background);
+        }
+
+         for (i = 0; i < 20; i++) {
+            if(Enemy_Bullets[i].status == Alive)
+                LCD_MixPicure(Enemy_Bullets[i].loc_x, Enemy_Bullets[i].loc_y, &IMAGE_LIB.Bullet, &IMAGE_LIB.Background);
         }
         
         for (i = 0; i < 5; i++) {
@@ -258,22 +262,42 @@ static void Bullet_Manage(void *parm) {
     while(1) {
 
         Create_Bullet();
-    
-        vTaskDelay(60); 
+
+        vTaskDelay(80); 
     }
 }
 
 static void Create_EnemyFlight(void *parm) {
 
-    //uint8_t status = 0;
-    //uint8_t flag = 0;
-    //uint8_t i = 0;
+    uint8_t i = 0;
+    int8_t flag = 0;
+    int16_t time = 800;
+    static uint8_t num = 0;
     
     while(1) {
 
-        Create_Enemy();
+        flag = Create_Enemy();
+        
+        if(flag == 1) {
+            num++;
+            flag = 0;
+            if(num >= 7) {
+                num = 0;
+                time -= 100;
+                if(time < 300) {
+                    time = 300;
+                }
+            }
+        }
 
-        vTaskDelay(800);
+        for(i = 0; i < 5; i++) {
+            if(Enemys[i].status == Alive) {
+                Enemy_Bullet(&Enemys[i]);
+                
+            }
+        }
+        
+        vTaskDelay(time);
     }
 }
 
@@ -289,9 +313,14 @@ static void Updata_location(void *parm) {
         vTaskSuspendAll();
         
         for (i = 0; i < 20; i++) {
-            if(Bullets[i].loc_y < 5) {
+            if(Bullets[i].status == Alive && Bullets[i].loc_y < 5) {
                 Bullets[i].status = Destroy;
             }
+        }
+
+        for (i = 0; i < 20; i++) {
+            if(Enemy_Bullets[i].status == Alive && Enemy_Bullets[i].loc_y > 300)
+                Enemy_Bullets[i].status = Destroy;
         }
         
         for (i = 0; i < 5; i++) {
@@ -311,7 +340,7 @@ static void Updata_location(void *parm) {
 
                     if(Enemys[j].status == Alive) {
 
-                        if(Bullets[i].loc_x >= Enemys[j].loc_x + 5 && Bullets[i].loc_x <= Enemys[j].loc_x + 45) {
+                        if(Bullets[i].loc_x >= Enemys[j].loc_x && Bullets[i].loc_x <= Enemys[j].loc_x + 50) {
 
                             if(Bullets[i].loc_y <= Enemys[j].loc_y + 65) {
                                 Enemys[j].life--;
@@ -327,6 +356,11 @@ static void Updata_location(void *parm) {
         for (i = 0; i < 20; i++) {
             if(Bullets[i].status == Alive)
                 Bullets[i].loc_y -= Bullets[i].speed;
+        }
+
+        for (i = 0; i < 20; i++) {
+            if(Enemy_Bullets[i].status == Alive)
+                Enemy_Bullets[i].loc_y += Enemy_Bullets[i].speed;
         }
 
         for (i = 0; i < 5; i++) {
@@ -358,9 +392,9 @@ static void Beep_Control(void *parm) {
 
     while(1) {
         xSemaphoreTake(xBeepOn, portMAX_DELAY);
-        BEEP(ON);
-        vTaskDelay(50);
-        BEEP(OFF);
+        //BEEP(ON);
+        vTaskDelay(30);
+        //BEEP(OFF);
     }
 
 }
