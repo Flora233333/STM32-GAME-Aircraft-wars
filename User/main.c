@@ -175,7 +175,6 @@ static void AppTaskCreate(void)
 /*
     TODO:
     3.飞机之间的碰撞检测
-    4.敌机发射子弹 AC
     5.主机受伤显示
     6.主机受伤爆炸
 */
@@ -201,8 +200,13 @@ static void Print_Image(void *parm) {
             Hero.loc_y = 5;
         if(Hero.loc_y > 270)
             Hero.loc_y = 270;
-        
-        LCD_MixPicure(Hero.loc_x, Hero.loc_y, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
+
+        if(Hero.status == Alive)
+            LCD_MixPicure(Hero.loc_x, Hero.loc_y, &IMAGE_LIB.Hero, &IMAGE_LIB.Background);
+        else {
+            LCD_MixPicure(60, 80, &IMAGE_LIB.Fail, &IMAGE_LIB.Background);
+            while (1);   
+        }   
 
         for (i = 0; i < 20; i++) {
             if(Bullets[i].status == Alive)
@@ -278,7 +282,7 @@ static void Create_EnemyFlight(void *parm) {
 
         flag = Create_Enemy();
         
-        if(flag == 1) {
+        if(flag == 1) { // 每生成七架飞机后难度上升
             num++;
             flag = 0;
             if(num >= 7) {
@@ -312,6 +316,10 @@ static void Updata_location(void *parm) {
         
         vTaskSuspendAll();
         
+        if(Hero.life == 0) {
+            Hero.status = Destroy;
+        }
+
         for (i = 0; i < 20; i++) {
             if(Bullets[i].status == Alive && Bullets[i].loc_y < 5) {
                 Bullets[i].status = Destroy;
@@ -332,7 +340,7 @@ static void Updata_location(void *parm) {
             }
         }
 
-        for (i = 0; i < 20; i++) {
+        for (i = 0; i < 20; i++) { //判断是否击中敌机
             
             if(Bullets[i].status == Alive) {
                 
@@ -345,11 +353,28 @@ static void Updata_location(void *parm) {
                             if(Bullets[i].loc_y <= Enemys[j].loc_y + 65) {
                                 Enemys[j].life--;
                                 Bullets[i].status = Destroy;
-                                
                             }
                         }
                     }
                 }
+            }
+        }
+
+        for (i = 0; i < 20; i++) { //判断是否击中英雄
+            
+            if(Enemy_Bullets[i].status == Alive) {
+
+                if(Hero.status == Alive) {
+
+                    if(Enemy_Bullets[i].loc_x >= Hero.loc_x && Enemy_Bullets[i].loc_x <= Hero.loc_x + 30) {
+
+                        if(Enemy_Bullets[i].loc_y >= Hero.loc_y - 10 && Enemy_Bullets[i].loc_y <= Hero.loc_y + 30) {
+                            Hero.life--;
+                            Enemy_Bullets[i].status = Destroy;    
+                        }
+                    }
+                }
+                
             }
         }
 
@@ -431,7 +456,7 @@ static void BSP_Init(void)
     Obj_Init();
     
     LCD_SetFont(&Font16x24);
-    LCD_SetColors(RED, BLACK);
+    LCD_SetColors(RED, WHITE);
     ILI9341_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);
 }
 

@@ -898,6 +898,10 @@ void XPT2046_TouchEvenHandler(void )
             
 			Hero.loc_x = cinfo.x - 20; // 减20和25是因为要居中显示飞机（飞机宽40长50）
             Hero.loc_y = cinfo.y - 25;
+
+            Hero.x = cinfo.x; //左上角的值
+            Hero.y = cinfo.y;
+            
 			//调用触摸被按下时的处理函数，可在该函数编写自己的触摸按下处理过程
 			//XPT2046_TouchDown(&cinfo);
 			

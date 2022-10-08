@@ -68,14 +68,20 @@ void Image_Init(void) {
     IMAGE_LIB.Bullet.pointer = bullet;
     IMAGE_LIB.Bullet.width = 6;
     IMAGE_LIB.Bullet.height = 12;
+
+    IMAGE_LIB.Fail.pointer = fail;
+    IMAGE_LIB.Fail.width = 120;
+    IMAGE_LIB.Fail.height = 160;
 }
 
 int8_t Create_Hero(void) {
     Hero.loc_x = 100;
     Hero.loc_y = 200;
+    Hero.x = 100;
+    Hero.y = 200;
     Hero.speed = 5;
     Hero.status = Alive;
-    Hero.life = 3;
+    Hero.life = 5;
     Hero.dir = 0;
     Hero.score = 0;
     return 0;
