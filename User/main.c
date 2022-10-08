@@ -417,9 +417,9 @@ static void Beep_Control(void *parm) {
 
     while(1) {
         xSemaphoreTake(xBeepOn, portMAX_DELAY);
-        //BEEP(ON);
-        vTaskDelay(30);
-        //BEEP(OFF);
+        BEEP(ON);
+        vTaskDelay(10);
+        BEEP(OFF);
     }
 
 }
